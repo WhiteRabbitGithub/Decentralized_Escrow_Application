@@ -29,9 +29,19 @@ function App() {
   async function newContract() {
     const beneficiary = document.getElementById('beneficiary').value;
     const arbiter = document.getElementById('arbiter').value;
-    const value = ethers.BigNumber.from(document.getElementById('wei').value);
-    const escrowContract = await deploy(signer, arbiter, beneficiary, value);
+    
 
+    const etherValue = document.getElementById('eth').value;
+    const value = ethers.utils.parseUnits(etherValue,'ether');
+
+    // Get Balance of Current Address
+    const getAccountBalance = await provider.getBalance(account);
+    const balance = ethers.utils.formatEther(getAccountBalance);
+    //
+
+    if (balance < etherValue) { alert("Insufficient Balance"); throw new Error("Insufficient Balance"); }
+
+    const escrowContract = await deploy(signer, arbiter, beneficiary, value);
 
     const escrow = {
       address: escrowContract.address,
@@ -59,17 +69,17 @@ function App() {
         <h1> New Contract </h1>
         <label>
           Arbiter Address
-          <input type="text" id="arbiter" />
+          <input type="text" id="arbiter" value="0xD55B8D93CC61267E9A253A279872DEd899bbA17F" />
         </label>
 
         <label>
           Beneficiary Address
-          <input type="text" id="beneficiary" />
+          <input type="text" id="beneficiary" value="0xD55B8D93CC61267E9A253A279872DEd899bbA17F" />
         </label>
 
         <label>
-          Deposit Amount (in Wei)
-          <input type="text" id="wei" />
+          Deposit Amount (in eth)
+          <input type="text" id="eth" />
         </label>
 
         <div
